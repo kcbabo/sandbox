@@ -1,12 +1,12 @@
 
 Proposal
 ========
-Camel has traditionally followed a "type-less" model for integration, where endpoints do not have contracts and processors do not have knowledge of the type of a message being processed.  We propose several additions to Camel to provide information on message types and to declare contracts within Camel configuration to support staticly-typed interactions.  Adding these capabilities to Camel will produce the following benefits to Camel users:
-	- Static evaluation and validation of data types and interactions in an application.
-	- Runtime evaluation of data types and interactions
-	- The ability to start with a weak/dynamically typed application and move to a statically typed application
-	- Support for declarative transformation / automatic type conversion
-	- Support for declarative validation of data types
+Camel has traditionally followed a "type-less" model for integration, where endpoints do not have contracts and processors do not have knowledge of the type of a message being processed.  We propose several additions to Camel to provide information on message types and to declare contracts within Camel configuration to support staticly-typed interactions.  Adding these capabilities to Camel will provide the following benefits to Camel users:
+* Static evaluation and validation of data types and interactions in an application.
+* Runtime evaluation of data types and interactions
+* The ability to start with a weak/dynamically typed application and move to a statically typed application
+* Support for declarative transformation / automatic type conversion
+* Support for declarative validation of data types
 
 Contract Metadata
 =================
@@ -27,7 +27,7 @@ Static Definition
 =================
 
 1) Extend the DSL - add methods that allow input and output types to be specified directly via the DSL, e.g. 
-
+```
 class ProcessorDefinition {
 	// Set the input type for the current processor
 	public Type inputType(String inputType);
@@ -41,34 +41,42 @@ class ProcessorDefinition {
 
 	// ... other methods omitted 
 }
-
+```
+```
 from("direct:abc")
 		.inputType("java:org.example.Order")
 	.to("direct:d")
    		.inputType("{org.example}xmlOrder")
    		.outputType("urn:acme:orderAck")
    	.to("direct:e");
+```
 
 Putting aside the crappy syntax, the above example shows how static type definition can be specified directly within the DSL.  A positive with this approach is that is provides a fine-grained approach to specifying type metadata that applies to all types of processors.  A negative is that it might be too "chatty" in the DSL; it's also unclear we even need to specify contract metadata at the processor level.
 
 2) Provide a standard set of endpoint parameters that specify the contract metadata, e.g.
 
+```
    component-name : <hierarchical-part> ? [ <component-config> ] [ <contract> ]
    contract : [inputType outputType contract]
+```
 
+```
 from("direct:abc?inputType=java:org.example.Order")
 	.to("direct:d?inputType={org.example}xmlOrder;outputType=urn:acme:orderAck")
    	.to("direct:e");
+```
 
 Specifying this at the endpoint level is a bit more coarse-grained than the processor approach, but still allows the data types to change within a route.  It does conflate the endpoint URI a bit and introduces a situation where component endpoint configuration could overlap with names of the contract parameters.
 
 3) Specify contract information at the route level, e.g.
 
+```
 <route id="myRoute" inputType="java:org.example.Order" outputType="urn:acme:orderAck">
    <from uri="direct:abc"/>
    <to uri="direct:d"/>
    <to uri="direct:e"/>
 </route>
+```
 
 This is fairly clean as it does not pollute the routing logic at all, but the approach is very coarse-grained.  Specifying contract metadata at the route level assumes that the type only changes at the edges of the route, which is not the case even in our simple examples above.
 
@@ -88,5 +96,7 @@ Since this is optional, the runtime and tooling should not fail in the event tha
 
 While the name of a data type can be arbitrary, it may make sense to establish conventions for common types.  In SwitchYard, we use the following:
 
+```
 Java =>  java:[fully qualified class name]
 XML  =>  {namespace}element-name
+```
