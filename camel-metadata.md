@@ -1,6 +1,6 @@
 
 ###Proposal
-Camel has traditionally followed a "type-less" model for integration, where endpoints do not have contracts and processors do not have knowledge of the type of a message being processed.  We propose several additions to Camel to provide information on message types and to declare contracts within Camel configuration to support staticly-typed interactions.  Adding these capabilities to Camel will provide the following benefits to Camel users:
+Camel has traditionally followed a "type-less" model for integration, where endpoints do not have contracts and processors do not have knowledge of the type of a message being processed.  We propose several additions to Camel to provide information on message types and to declare contracts within Camel configuration to support statically-typed interactions.  Adding these capabilities to Camel will provide the following benefits to Camel users:
 * Static evaluation and validation of data types and interactions in an application.
 * Runtime evaluation of data types and interactions
 * The ability to start with a weak/dynamically typed application and move to a statically typed application
@@ -79,7 +79,7 @@ This is fairly clean as it does not pollute the routing logic at all, but the ap
 ####Dynamic Definition
 Contract metadata can also be set at runtime through the use of well-known properties or headers which specify the types being used.  The metadata can be set in component code, user code, or both.
 
-Certain components are aware of the types of messages being exchnaged based on information present on the wire (e.g. HTTP header) or passed in via endpoint configuration (e.g. WSDL definition).  Each component that is aware of message types would attach relevant message type information to messages as they are processed. 
+Certain components are aware of the types of messages being exchanged based on information present on the wire (e.g. HTTP header) or passed in via endpoint configuration (e.g. WSDL definition).  Each component that is aware of message types would attach relevant message type information to messages as they are processed. 
 
 User code could attach well-known properties/headers through custom processors or beans invoked during a route.  This approach serves as an alternative to the metadata in the configuration and requires no changes to the DSL, endpoint syntax, or Camel schema.  If none of the options for static definition are desirable/achievable, this dynamic approach could be a hacky workaround.
 
