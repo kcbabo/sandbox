@@ -1,12 +1,1 @@
-{
-  "header" : {
-    "customerNum" : "ACME-123",
-    "status" : "GOLD",
-    "orderNum" : "ORDER1"
-  },
-  "orderItems" : [ {
-    "id" : "PICKLE",
-    "price" : 2.25,
-    "quantity" : 1000
-  } ]
-}
+{"custId":"ACME-123","priority":"GOLD","orderId":"ORDER1","lineItems":[{"itemId":"PICKLE","cost":2.25,"amount":1000}]}
