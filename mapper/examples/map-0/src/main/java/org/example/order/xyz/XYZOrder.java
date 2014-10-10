@@ -16,7 +16,7 @@ package org.example.order.xyz;
 public class XYZOrder {
 
     private String custId;
-    private Priority priority;
+    private String priority;
     private String orderId;
     private LineItem[] lineItems;
     
@@ -29,11 +29,11 @@ public class XYZOrder {
         return this;
     }
     
-    public Priority getPriority() {
+    public String getPriority() {
         return priority;
     }
     
-    public XYZOrder setPriority(Priority priority) {
+    public XYZOrder setPriority(String priority) {
         this.priority = priority;
         return this;
     }

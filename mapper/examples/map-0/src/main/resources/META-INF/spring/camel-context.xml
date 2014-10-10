@@ -17,20 +17,19 @@
    </bean>
 
    <!-- Camel route -->
-   <camel:camelContext xmlns="http://camel.apache.org/schema/spring">
-      <camel:dataFormats>
-         <camel:json id="json" library="Jackson"/>
-      </camel:dataFormats>
-
-      <camel:route>
-         <camel:from uri="file:src/data?fileName=abc-order.xml&amp;noop=true" />
-         <camel:unmarshal>
-            <camel:castor mappingFile="castor-abc-order.xml" />
-         </camel:unmarshal>
-         <camel:convertBodyTo type="org.example.order.xyz.XYZOrder" />
-         <camel:marshal ref="json" />
-         <to uri="file:target/messages?fileName=abc-order.json"/>
-      </camel:route>
-   </camel:camelContext>
+   <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <dataFormats>
+        <json library="Jackson" id="json"/>
+    </dataFormats>
+    <route>
+        <from uri="file:src/data?fileName=abc-order.xml&amp;noop=true"/>
+        <unmarshal>
+            <jaxb contextPath="org.example.order.abc"/>
+        </unmarshal>
+        <convertBodyTo type="org.example.order.xyz.XYZOrder"/>
+        <marshal ref="json"/>
+        <to uri="file:target/messages?fileName=abc-order.json"/>
+    </route>
+</camelContext>
 
 </beans>

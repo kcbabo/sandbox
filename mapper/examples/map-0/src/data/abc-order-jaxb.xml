@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ABCOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../main/resources/abc-order.xsd">
+  <header>
+    <status>status</status>
+    <customer-num>customer-num</customer-num>
+    <order-num>order-num</order-num>
+  </header>
+  <order-items>
+    <item>
+      <price>0.0</price>
+      <quantity>0</quantity>
+    </item>
+  </order-items>
+</ABCOrder>

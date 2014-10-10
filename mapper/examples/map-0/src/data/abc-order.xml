@@ -5,10 +5,10 @@
         <customer-num>ACME-123</customer-num>
         <order-num>ORDER1</order-num>
     </header>
-    <items>
+    <order-items>
         <item id="PICKLE">
             <price>2.25</price>
             <quantity>1000</quantity>
         </item>
-    </items>
+    </order-items>
 </ABCOrder>

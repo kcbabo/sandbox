@@ -15,18 +15,18 @@
             <a>header.orderNum</a>
             <b>orderId</b>
         </field>
-        <field custom-converter="org.example.order.StatusConverter">
+        <field>
             <a>header.status</a>
             <b>priority</b>
         </field>
         <field>
-            <a>orderItems</a>
+            <a>orderItems.item</a>
             <b>lineItems</b>
         </field>
     </mapping>
 
     <mapping>
-        <class-a>org.example.order.abc.OrderItem</class-a>
+        <class-a>org.example.order.abc.ABCOrder.OrderItems.Item</class-a>
         <class-b>org.example.order.xyz.LineItem</class-b>
 
         <field>
@@ -42,5 +42,4 @@
             <b>cost</b>
         </field>
     </mapping>
-    
 </mappings>
