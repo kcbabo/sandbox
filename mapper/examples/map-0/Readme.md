@@ -16,8 +16,13 @@ The application picks up input XML from the src/data directory and drops output 
 
 ####Notable Bits
 [Input XML](https://github.com/kcbabo/sandbox/blob/master/mapper/examples/map-0/src/data/abc-order.xml)
+
 [Input XSD](https://github.com/kcbabo/sandbox/blob/master/mapper/examples/map-0/src/main/resources/abc-order.xsd)
+
 [Generated Java Input](https://github.com/kcbabo/sandbox/tree/master/mapper/examples/map-0/src/main/java/org/example/order/abc)
+
 [Camel Config](https://github.com/kcbabo/sandbox/blob/master/mapper/examples/map-0/src/main/resources/META-INF/spring/camel-context.xml)
+
 [Dozer Config](https://github.com/kcbabo/sandbox/blob/master/mapper/examples/map-0/src/main/resources/dozerOrderMapping.xml)
+
 [Output JSON](https://github.com/kcbabo/sandbox/blob/master/mapper/examples/map-0/src/data/abc-order.json)
