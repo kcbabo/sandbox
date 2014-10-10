@@ -1,0 +1,12 @@
+{
+  "header" : {
+    "customerNum" : "ACME-123",
+    "status" : "GOLD",
+    "orderNum" : "ORDER1"
+  },
+  "orderItems" : [ {
+    "id" : "PICKLE",
+    "price" : 2.25,
+    "quantity" : 1000
+  } ]
+}
