@@ -1,5 +1,9 @@
 package org.jboss.mapper.forge;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
@@ -17,16 +21,18 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 public class ViewModelCommand extends AbstractProjectCommand  {
+	
+	
 
-	@Inject ProjectFactory _projectFactory;
+	@Inject 
+	private ProjectFactory _projectFactory;
 	
 	@Inject
 	@WithAttributes(label = "Model Name", required = true, description = "Name of the model type")
-	UIInput<String> modelName;
+	private UIInput<String> modelName;
 
 	@Override
 	public void initializeUI(UIBuilder builder) throws Exception {
@@ -40,10 +46,14 @@ public class ViewModelCommand extends AbstractProjectCommand  {
 	    JavaResource javaResource = facet.getJavaResource(modelName.getValue());
 	    JavaClassSource javaClass = javaResource.getJavaType();
 	    UIOutput output = context.getUIContext().getProvider().getOutput();
-	    output.out().println(modelName.getValue());
-	    for (FieldSource field : javaClass.getFields()) {
-	    	output.out().println(field.getName());
-	    }
+	    
+	    URL[] urls = new URL[] {
+	    		new File(project.getRootDirectory().getFullyQualifiedName() + "/target/classes").toURL()};
+	    URLClassLoader cl = new URLClassLoader(urls);
+	    Class clazz = cl.loadClass(modelName.getValue());
+	    ModelBuilder.fromJavaClass(clazz).print(output.out());
+	    cl.close();
+
 		return Results.success("Created mapping configuration.");
 	}
 

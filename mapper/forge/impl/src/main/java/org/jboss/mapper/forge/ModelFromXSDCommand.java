@@ -77,7 +77,8 @@ public class ModelFromXSDCommand extends AbstractProjectCommand {
 	@Override
 	public Metadata getMetadata(UIContext context) {
 		return Metadata.forCommand(ModelFromXSDCommand.class)
-				.description("Model from XSD")
-	               .category(Categories.create("Data Mapper"));
+				.description("Generate model classes from XML schema")
+				.name("generate-from-xsd")
+	            .category(Categories.create("Data Mapper"));
 	}
 }
