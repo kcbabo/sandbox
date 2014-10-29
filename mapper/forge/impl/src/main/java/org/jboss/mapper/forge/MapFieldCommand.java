@@ -1,47 +1,49 @@
 package org.jboss.mapper.forge;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import javax.inject.Inject;
 
-import org.jboss.forge.addon.parser.java.facets.JavaSourceFacet;
-import org.jboss.forge.addon.parser.java.resources.JavaResource;
+import org.jboss.forge.addon.facets.Facet;
+import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
-import org.jboss.forge.addon.ui.output.UIOutput;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
 
-public class ViewModelCommand extends AbstractMapperCommand  {
-	public static final String NAME = "view-model";
-	public static final String DESCRIPTION = "View the model for a Java class.";
+public class MapFieldCommand extends AbstractMapperCommand  {
+	
+	public static final String NAME = "map-field";
+	public static final String DESCRIPTION = "Create a mapping between two fields.";
+
+	@Inject
+	@WithAttributes(label = "Source Field", required = true, description = "Full path of the source field")
+	UIInput<String> sourceField;
 	
 	@Inject
-	@WithAttributes(label = "Model Name", required = true, description = "Name of the model type")
-	private UIInput<String> modelName;
+	@WithAttributes(label = "Target Field", required = true, description = "Full path of the target field")
+	UIInput<String> targetField;
 
 	@Override
 	public void initializeUI(UIBuilder builder) throws Exception {
-		builder.add(modelName);
+		builder.add(sourceField).add(targetField);
 	}
 
 	@Override
 	public Result execute(UIExecutionContext context) throws Exception {
 		Project project = getSelectedProject(context);
-		Model model = loadModel(project, modelName.getValue());
-	    UIOutput output = context.getUIContext().getProvider().getOutput();
-	    model.print(output.out());
-		return Results.success();
+		ConfigBuilder config = getMapperContext(project).getConfig();
+		saveConfig(project);
+		//config.map(source, target);
+		
+		return Results.success("Created mapping configuration.");
 	}
 
 	@Override
@@ -53,4 +55,5 @@ public class ViewModelCommand extends AbstractMapperCommand  {
 	public String getDescription() {
 		return DESCRIPTION;
 	}
+	
 }

@@ -1,32 +1,20 @@
 package org.jboss.mapper.forge;
 
-import java.io.File;
-
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.ResourcesFacet;
-import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
-import org.jboss.forge.addon.resource.DirectoryResource;
-import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.ui.context.UIBuilder;
-import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
-import org.jboss.forge.addon.ui.util.Categories;
-import org.jboss.forge.addon.ui.util.Metadata;
-import org.jboss.mapper.dozer.config.ConfigBuilder;
 
-public class CreateMappingCommand extends AbstractProjectCommand  {
+public class CreateMappingCommand extends AbstractMapperCommand  {
+	
+	public static final String NAME = "create-mapping";
+	public static final String DESCRIPTION = "Create a new mapping definition";
 
-	@Inject ProjectFactory _projectFactory;
-	
-	private static final String DEFAULT_DOZER_PATH = "dozerBeanMapping.xml";
-	
 	@Inject
 	@WithAttributes(label = "Source Model", required = true, description = "Name of the source model type")
 	UIInput<String> sourceModel;
@@ -43,28 +31,21 @@ public class CreateMappingCommand extends AbstractProjectCommand  {
 	@Override
 	public Result execute(UIExecutionContext context) throws Exception {
 		Project project = getSelectedProject(context);
-		DirectoryResource root = project.getFacet(ResourcesFacet.class).getResourceDirectory();
-		FileResource<?> dozerConfig = root.getChildOfType(FileResource.class, DEFAULT_DOZER_PATH);
-		ConfigBuilder cb = ConfigBuilder.newConfig(sourceModel.getValue(), targetModel.getValue());
-		cb.saveConfig(dozerConfig.getResourceOutputStream());
+		ConfigBuilder config = loadConfig(project);
+		config.addClassMapping(sourceModel.getValue(), targetModel.getValue());
+		saveConfig(project);
+		
 		return Results.success("Created mapping configuration.");
 	}
 
 	@Override
-	protected boolean isProjectRequired() {
-		return true;
+	public String getName() {
+		return NAME;
 	}
 
 	@Override
-	protected ProjectFactory getProjectFactory() {
-		return _projectFactory;
+	public String getDescription() {
+		return DESCRIPTION;
 	}
 
-	@Override
-	public Metadata getMetadata(UIContext context) {
-		return Metadata.forCommand(ModelFromXSDCommand.class)
-				.description("Create Mapping")
-				.name("create-mapping")
-	            .category(Categories.create("Data Mapper"));
-	}
 }

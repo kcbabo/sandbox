@@ -41,6 +41,10 @@ public class Model {
 		return type;
 	}
 	
+	public Model getParent() {
+		return parent;
+	}
+	
 	public Model setIsCollection(boolean isCollection) {
 		this.isCollection = isCollection;
 		return this;
