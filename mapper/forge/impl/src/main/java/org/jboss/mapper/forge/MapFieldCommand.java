@@ -22,6 +22,7 @@ public class MapFieldCommand extends AbstractMapperCommand  {
 	
 	public static final String NAME = "map-field";
 	public static final String DESCRIPTION = "Create a mapping between two fields.";
+	private static final String FIELD_SEPARATOR = ".";
 
 	@Inject
 	@WithAttributes(label = "Source Field", required = true, description = "Full path of the source field")
@@ -40,10 +41,15 @@ public class MapFieldCommand extends AbstractMapperCommand  {
 	public Result execute(UIExecutionContext context) throws Exception {
 		Project project = getSelectedProject(context);
 		ConfigBuilder config = getMapperContext(project).getConfig();
+		Model source = getModel(
+				getMapperContext(project).getSourceModel(), sourceField.getValue());
+		Model target = getModel(
+				getMapperContext(project).getTargetModel(), targetField.getValue());
+		config.map(source, target);
+
 		saveConfig(project);
-		//config.map(source, target);
 		
-		return Results.success("Created mapping configuration.");
+		return Results.success("Created field mapping.");
 	}
 
 	@Override
@@ -56,4 +62,13 @@ public class MapFieldCommand extends AbstractMapperCommand  {
 		return DESCRIPTION;
 	}
 	
+	Model getModel(Model model, String path) {
+		int sepIdx = path.indexOf(FIELD_SEPARATOR);
+		if (sepIdx < 0) {
+			return model.get(path);
+		} else {
+			String nextField = path.substring(0, sepIdx);
+			return getModel(model.get(nextField), path.substring(sepIdx + 1));
+		}
+	}
 }

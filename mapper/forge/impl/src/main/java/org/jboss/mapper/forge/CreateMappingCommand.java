@@ -31,10 +31,16 @@ public class CreateMappingCommand extends AbstractMapperCommand  {
 	@Override
 	public Result execute(UIExecutionContext context) throws Exception {
 		Project project = getSelectedProject(context);
+		// Create configuration
 		ConfigBuilder config = loadConfig(project);
 		config.addClassMapping(sourceModel.getValue(), targetModel.getValue());
-		saveConfig(project);
 		
+		// Load models into mapper context
+		getMapperContext(project).setSourceModel(loadModel(project, sourceModel.getValue()));
+		getMapperContext(project).setTargetModel(loadModel(project, targetModel.getValue()));
+		
+		// Save on our way out
+		saveConfig(project);
 		return Results.success("Created mapping configuration.");
 	}
 
@@ -47,5 +53,4 @@ public class CreateMappingCommand extends AbstractMapperCommand  {
 	public String getDescription() {
 		return DESCRIPTION;
 	}
-
 }
