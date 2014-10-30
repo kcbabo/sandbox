@@ -2,21 +2,14 @@ package org.jboss.mapper.forge;
 
 import javax.inject.Inject;
 
-import org.jboss.forge.addon.facets.Facet;
-import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
-import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
 import org.jboss.forge.addon.ui.input.UIInput;
+import org.jboss.forge.addon.ui.input.UISelectOne;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
-import org.jboss.forge.addon.ui.util.Categories;
-import org.jboss.forge.addon.ui.util.Metadata;
 
 public class MapFieldCommand extends AbstractMapperCommand  {
 	
@@ -26,14 +19,23 @@ public class MapFieldCommand extends AbstractMapperCommand  {
 
 	@Inject
 	@WithAttributes(label = "Source Field", required = true, description = "Full path of the source field")
-	UIInput<String> sourceField;
+	UISelectOne<String> sourceField;
 	
 	@Inject
 	@WithAttributes(label = "Target Field", required = true, description = "Full path of the target field")
-	UIInput<String> targetField;
+	UISelectOne<String> targetField;
 
 	@Override
 	public void initializeUI(UIBuilder builder) throws Exception {
+		Project project = getSelectedProject(builder.getUIContext());
+		Model sourceModel = getMapperContext(project).getSourceModel();
+		if (sourceModel != null) {
+			sourceField.setValueChoices(sourceModel.listFields());
+		}
+		Model targetModel = getMapperContext(project).getTargetModel();
+		if (targetModel != null) {
+			targetField.setValueChoices(targetModel.listFields());
+		}
 		builder.add(sourceField).add(targetField);
 	}
 

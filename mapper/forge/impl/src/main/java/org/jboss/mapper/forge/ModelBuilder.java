@@ -17,7 +17,9 @@ public class ModelBuilder {
 		for (Field field : fields) {
 			Model child = model.addChild(field.getName(), field.getType().getName());
 			
-			if (field.getType().isPrimitive() || field.getType().getName().equals(String.class.getName())) {
+			if (field.getType().isPrimitive() 
+					|| field.getType().getName().equals(String.class.getName())
+					|| field.getType().getName().startsWith("java.lang")) {
 				// nothing more to do for this child model
 				continue;
 			}

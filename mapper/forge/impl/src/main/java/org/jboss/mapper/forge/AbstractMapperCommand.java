@@ -54,9 +54,9 @@ public abstract class AbstractMapperCommand extends AbstractProjectCommand  {
 	
 	protected ConfigBuilder loadConfig(Project project) throws Exception {
 		ConfigBuilder config;
-		if (getDozerFile(project).exists()) {
+		if (getFile(project, DEFAULT_DOZER_PATH).exists()) {
 			config = ConfigBuilder.loadConfig(
-					getDozerFile(project).getUnderlyingResourceObject());
+					getFile(project, DEFAULT_DOZER_PATH).getUnderlyingResourceObject());
 		} else {
 			config = ConfigBuilder.newConfig();
 		}
@@ -66,12 +66,12 @@ public abstract class AbstractMapperCommand extends AbstractProjectCommand  {
 	
 	protected void saveConfig(Project project) throws Exception {
 		getMapperContext(project).getConfig().saveConfig(
-				getDozerFile(project).getResourceOutputStream());
+				getFile(project, DEFAULT_DOZER_PATH).getResourceOutputStream());
 	}
 	
-	private FileResource<?> getDozerFile(Project project) {
+	protected FileResource<?> getFile(Project project, String path) {
 		DirectoryResource root = project.getFacet(ResourcesFacet.class).getResourceDirectory();
-		return root.getChildOfType(FileResource.class, DEFAULT_DOZER_PATH);
+		return root.getChildOfType(FileResource.class, path);
 	}
 	
 	protected Model loadModel(Project project, String className) throws Exception {

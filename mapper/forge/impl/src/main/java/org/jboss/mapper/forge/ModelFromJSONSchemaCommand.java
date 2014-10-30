@@ -1,6 +1,7 @@
 package org.jboss.mapper.forge;
 
 import java.io.File;
+import java.net.URL;
 
 import javax.inject.Inject;
 
@@ -12,22 +13,23 @@ import org.jboss.forge.addon.ui.input.UIInput;
 import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
-import org.xml.sax.InputSource;
+import org.jsonschema2pojo.SchemaMapper;
 
 import com.sun.codemodel.JCodeModel;
-import com.sun.tools.xjc.api.S2JJAXBModel;
-import com.sun.tools.xjc.api.SchemaCompiler;
-import com.sun.tools.xjc.api.XJC;
 
 
-public class ModelFromXSDCommand extends AbstractMapperCommand {
+public class ModelFromJSONSchemaCommand extends AbstractMapperCommand {
 	
-	public static final String NAME = "model-from-xsd";
-	public static final String DESCRIPTION = "Generate a Java class model from XML Schema.";
+	public static final String NAME = "model-from-json-schema";
+	public static final String DESCRIPTION = "Generate a Java class model from JSON Schema.";
 	
 	@Inject
-	@WithAttributes(label = "Schema Path", required = true, description = "Path to schema in project")
+	@WithAttributes(label = "Schema Path", required = true, description = "Path to JSON schema in project")
 	UIInput<String> schemaPath;
+	
+	@Inject
+	@WithAttributes(label = "Class Name", required = true, description = "Name used for the top-level generated class")
+	UIInput<String> className;
 	
 	@Inject
 	@WithAttributes(label = "Package Name", required = true, description = "Package name for generated model classes")
@@ -35,7 +37,7 @@ public class ModelFromXSDCommand extends AbstractMapperCommand {
 
 	@Override
 	public void initializeUI(UIBuilder builder) throws Exception {
-		builder.add(schemaPath).add(packageName);
+		builder.add(schemaPath).add(packageName).add(className);
 	}
 
 	@Override
@@ -43,16 +45,10 @@ public class ModelFromXSDCommand extends AbstractMapperCommand {
 		Project project = getSelectedProject(context);
 		FileResource<?> schemaFile = getFile(project, schemaPath.getValue());
 		
-		SchemaCompiler sc = XJC.createSchemaCompiler();
-		InputSource is = new InputSource(schemaFile.getResourceInputStream());
-		is.setSystemId(schemaFile.getFullyQualifiedName());
-		
-		sc.parseSchema(is);
-		sc.forcePackageName(packageName.getValue());
-		
-		S2JJAXBModel s2 = sc.bind();
-		JCodeModel jcm = s2.generateCode(null, null);
-		jcm.build(new File(project.getRoot().getChild("src/main/java").getFullyQualifiedName()));
+		JCodeModel codeModel = new JCodeModel();
+		URL jsonSchemaUrl = schemaFile.getUnderlyingResourceObject().toURI().toURL();
+		new SchemaMapper().generate(codeModel, className.getValue(), packageName.getValue(), jsonSchemaUrl);
+		codeModel.build(new File(project.getRoot().getChild("src/main/java").getFullyQualifiedName()));
 		
 		return Results.success("Model classes created for " + schemaPath.getValue());
 	}
