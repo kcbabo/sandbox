@@ -7,7 +7,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.jboss.mapper.dozer.config.Class;
 import org.jboss.mapper.dozer.config.Field;
 import org.jboss.mapper.dozer.config.FieldDefinition;
 import org.jboss.mapper.dozer.config.Mapping;
@@ -66,7 +65,13 @@ public class ConfigBuilder {
 	public void map(Model source, Model target) {
 		// Only add a class mapping if one has not been created already
 		if (requiresClassMapping(source.getParent(), target.getParent())) {
-			addClassMapping(source.getParent().getType(), target.getParent().getType());
+			String sourceType = source.getParent().isCollection() 
+					? ModelBuilder.getListType(source.getParent().getType())
+				    : source.getParent().getType();
+			String targetType = target.getParent().isCollection() 
+					? ModelBuilder.getListType(target.getParent().getType())
+				    : target.getParent().getType();
+			addClassMapping(sourceType, targetType);
 		}
 		
 		// Add field mapping details for the source and target
@@ -87,10 +92,12 @@ public class ConfigBuilder {
 	// under which a field mapping can be defined.
 	Mapping getClassMapping(Model model) {
 		Mapping mapping = null;
+		String type = model.isCollection() 
+				? ModelBuilder.getListType(model.getType()) : model.getType();
 		
 		for (Mapping m : mapConfig.getMapping()) {
-			if ((m.getClassA().getContent().equals(model.getType())
-					|| m.getClassB().getContent().equals(model.getType()))) {
+			if ((m.getClassA().getContent().equals(type)
+					|| m.getClassB().getContent().equals(type))) {
 				mapping = m;
 				break;
 			}

@@ -1,6 +1,7 @@
 package org.jboss.mapper.forge;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +48,10 @@ public class Model {
 		return parent;
 	}
 	
+	public boolean isCollection() {
+		return isCollection;
+	}
+	
 	public Model setIsCollection(boolean isCollection) {
 		this.isCollection = isCollection;
 		return this;
@@ -54,13 +59,13 @@ public class Model {
 	
 	public List<String> listFields() {
 		List<String> fields = new LinkedList<String>();
-		return listFields(fields, this, "");
+		return listFields(fields, this.children.values(), "");
 	}
 	
-	public List<String> listFields(List<String> fieldList, Model curNode, String prefix) {
-		fieldList.add(prefix + curNode.getName());
-		for (Model child : curNode.children.values()) {
-			listFields(fieldList, child, curNode.getName() + ".");
+	public List<String> listFields(List<String> fieldList, Collection<Model> fields, String prefix) {
+		for (Model field : fields) {
+			fieldList.add(prefix + field.getName());
+			listFields(fieldList, field.children.values(), prefix + field.getName() + ".");
 		}
 		return fieldList;
 	}

@@ -13,29 +13,67 @@ public class ModelBuilder {
 		return model;
 	}
 	
+	public static Class<?> getFieldType(Field field) {
+		Class<?> type;
+		
+		if (field.getType().isArray()) {
+			return field.getType().getComponentType();
+		} else if (Collection.class.isAssignableFrom(field.getType())) {
+			Type t = field.getGenericType();
+			if (t instanceof ParameterizedType) {
+				type = (Class)((ParameterizedType)t).getActualTypeArguments()[0];
+			} else {
+				type = Object.class;
+			}
+		} else {
+			type = field.getType();
+		}
+		
+		return type;
+	}
+	
+	public static String getListName(Class<?> listType) { 
+		return "[" + listType.getName() + "]";
+	}
+	
+	public static String getListType(String listName) { 
+		return listName.split("\\[")[1].split("\\]")[0];
+	}
+	
 	private static void addFieldsToModel(Field[] fields, Model model) {
 		for (Field field : fields) {
-			Model child = model.addChild(field.getName(), field.getType().getName());
-			
-			if (field.getType().isPrimitive() 
-					|| field.getType().getName().equals(String.class.getName())
-					|| field.getType().getName().startsWith("java.lang")) {
-				// nothing more to do for this child model
-				continue;
-			}
+			String fieldType;
+			Field[] childFields = null;
+			boolean isCollection = false;
 			
 			if (field.getType().isArray()) {
-				child.setIsCollection(true);
-				addFieldsToModel(field.getType().getComponentType().getDeclaredFields(), child);
+				isCollection = true;
+				fieldType = getListName(field.getType().getComponentType());
+				childFields = field.getType().getComponentType().getDeclaredFields();
 			} else if (Collection.class.isAssignableFrom(field.getType())) {
-				child.setIsCollection(true);
+				isCollection = true;
 				Type t = field.getGenericType();
 				if (t instanceof ParameterizedType) {
 					Class<?> tClass = (Class)((ParameterizedType)t).getActualTypeArguments()[0];
-					addFieldsToModel(tClass.getDeclaredFields(), child);
+					fieldType = getListName(tClass);
+					childFields = tClass.getDeclaredFields();
+				} else {
+					fieldType = getListName(Object.class);
 				}
 			} else {
-				addFieldsToModel(field.getType().getDeclaredFields(), child);
+				fieldType = field.getType().getName();
+				if (!field.getType().isPrimitive() 
+						&& !field.getType().getName().equals(String.class.getName())
+						&& !field.getType().getName().startsWith("java.lang")) {
+					
+					childFields = field.getType().getDeclaredFields();
+				}
+			}
+
+			Model child = model.addChild(field.getName(), fieldType);
+			child.setIsCollection(isCollection);
+			if (childFields != null) {
+				addFieldsToModel(childFields, child);
 			}
 		}
 	}
