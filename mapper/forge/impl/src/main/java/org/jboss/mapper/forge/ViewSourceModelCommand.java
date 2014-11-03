@@ -13,37 +13,34 @@
  */
 package org.jboss.mapper.forge;
 
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
-import org.jboss.forge.addon.ui.input.UIInput;
-import org.jboss.forge.addon.ui.metadata.WithAttributes;
 import org.jboss.forge.addon.ui.output.UIOutput;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 
-public class ViewModelCommand extends AbstractMapperCommand  {
-	public static final String NAME = "view-model";
-	public static final String DESCRIPTION = "View the model for a Java class.";
+public class ViewSourceModelCommand extends AbstractMapperCommand  {
+	public static final String NAME = "view-source-model";
+	public static final String DESCRIPTION = "View the source model for the current transformation";
 	
-	@Inject
-	@WithAttributes(label = "Model Name", required = true, description = "Name of the model type")
-	private UIInput<String> modelName;
-
 	@Override
 	public void initializeUI(UIBuilder builder) throws Exception {
-		builder.add(modelName);
+		
 	}
 
 	@Override
 	public Result execute(UIExecutionContext context) throws Exception {
 		Project project = getSelectedProject(context);
-		Model model = loadModel(project, modelName.getValue());
-	    UIOutput output = context.getUIContext().getProvider().getOutput();
-	    model.print(output.out());
-		return Results.success();
+		Model model = getMapperContext(project).getSourceModel();
+		UIOutput output = context.getUIContext().getProvider().getOutput();
+		if (model != null) {
+		    model.print(output.out());
+		} else {
+			output.out().println("No active mapping in session");
+		}
+
+	    return Results.success();
 	}
 
 	@Override
