@@ -12,8 +12,11 @@ import org.jboss.mapper.dozer.config.FieldDefinition;
 import org.jboss.mapper.dozer.config.Mapping;
 import org.jboss.mapper.dozer.config.Mappings;
 
-
 public class ConfigBuilder {
+	
+	private static final String DOZER_SCHEMA_LOC = 
+		"http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd";
+	
 	// JAXB classes for Dozer config model
 	private JAXBContext jaxbCtx;
 	private Mappings mapConfig;
@@ -41,6 +44,7 @@ public class ConfigBuilder {
 	public void saveConfig(OutputStream output) throws Exception {
 		Marshaller m = getJAXBContext().createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, DOZER_SCHEMA_LOC);
 		m.marshal(mapConfig, output);
 	}
 	
